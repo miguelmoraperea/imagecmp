@@ -1,3 +1,6 @@
+# pylint: disable=missing-module-docstring
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
 import os
 import argparse
 import hashlib
@@ -11,15 +14,22 @@ SUPPORTED_EXTENSIONS = ['jpg', 'mov', 'jpeg', 'mp4']
 
 
 def hashfile(file):
-    BUF_SIZE = 65536
+    buf_size = 65536
     sha256 = hashlib.sha256()
     with open(file, 'rb') as file:
         while True:
-            data = file.read(BUF_SIZE)
+            data = file.read(buf_size)
             if not data:
                 break
             sha256.update(data)
     return sha256.hexdigest()
+
+
+def _is_under_excluded_dirs(path):
+    for directory in EXCLUDE_DIRS:
+        if directory in path.split('/'):
+            return True
+    return False
 
 
 def process(targets):
@@ -28,6 +38,8 @@ def process(targets):
     database_hashes, database_pairs = load_from_library()
 
     for target in targets:
+        if _is_under_excluded_dirs(target):
+            continue
         if os.path.isdir(target) and IS_RECURSIVE:
             files.extend(recursively_find_all_images_under(target))
         elif os.path.isfile(target):
@@ -36,20 +48,21 @@ def process(targets):
                 files.append(os.path.join(CWD, target))
 
     for file in natsorted(files):
-        hash = hashfile(file)
+        hash_ = hashfile(file)
         found_file = ''
 
-        if hash in database_hashes:
+        print(hash_, database_pairs)
+        if hash_ in database_hashes:
             found_file = ''
-            database_file = database_pairs[hash]
+            database_file = database_pairs[hash_]
             if database_file != file:
                 # check if database file still exists
                 if os.path.exists(database_file):
                     found_file = database_file
                 else:
                     # Old file no longer exists, remove it from the database
-                    database_hashes.remove(hash)
-                    del database_pairs[hash]
+                    database_hashes.remove(hash_)
+                    del database_pairs[hash_]
 
         if found_file:
             msg = (f'\n❌\n{file}\n{found_file}\n')
@@ -57,20 +70,20 @@ def process(targets):
             errors.append(msg)
             continue
         print(f'✅ {file}')
-        database_hashes.add(hash)
-        database_pairs[hash] = file
+        database_hashes.add(hash_)
+        database_pairs[hash_] = file
 
     with open(DATABASE, 'w') as file:
-        for hash, path in sorted(database_pairs.items()):
-            file.write(f'{hash} | {path}\n')
+        for hash_, path in sorted(database_pairs.items()):
+            file.write(f'{hash_} | {path}\n')
 
     if errors:
         with open('errors', 'w') as file:
-                for err in errors:
-                    file.write(f'{err}\n')
+            for err in errors:
+                file.write(f'{err}\n')
         print('\nDuplicated files found, see the "errors" file')
     else:
-        print('\nNo Duplicated files found.')
+        print('\nNo duplicated files found.')
     print('Done')
 
 
@@ -91,7 +104,7 @@ def load_from_library():
 def recursively_find_all_images_under(directory):
     files_ = []
     for root, dirs, files in os.walk(os.path.join(CWD, directory)):
-        dirs[:] = [dir for dir in dirs if dir not in EXCLUDE_DIRS]
+        dirs[:] = [dir for dir in dirs if not _is_under_excluded_dirs(dir)]
         for file in files:
             full_path = os.path.join(root, file)
             extension = get_extension(full_path)
