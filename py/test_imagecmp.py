@@ -135,9 +135,9 @@ class TestCompareImages(unittest.TestCase):
 
     def test_no_duplicated_images_found(self):
         images = {
-            'image_1.jpg': '../test_images/abstract_1.jpg',
-            'image_2.jpg': '../test_images/abstract_2.jpg',
-            'image_3.jpg': '../test_images/abstract_3.jpg',
+            'image_1.jpg': '../../test_images/abstract_1.jpg',
+            'image_2.jpg': '../../test_images/abstract_2.jpg',
+            'image_3.jpg': '../../test_images/abstract_3.jpg',
         }
         _copy_images_to_test_dir(images)
         result = subprocess.run('imgcmp *',
@@ -150,9 +150,9 @@ class TestCompareImages(unittest.TestCase):
 
     def test_one_duplicated_image_found(self):
         images = {
-            'image_1.jpg': '../test_images/abstract_1.jpg',
-            'image_2.jpg': '../test_images/abstract_2.jpg',
-            'image_3.jpg': '../test_images/abstract_1.jpg',
+            'image_1.jpg': '../../test_images/abstract_1.jpg',
+            'image_2.jpg': '../../test_images/abstract_2.jpg',
+            'image_3.jpg': '../../test_images/abstract_1.jpg',
         }
         _copy_images_to_test_dir(images)
         result = subprocess.run('imgcmp *',
@@ -166,9 +166,9 @@ class TestCompareImages(unittest.TestCase):
 
     def test_two_duplicated_images_found(self):
         images = {
-            'image_1.jpg': '../test_images/abstract_1.jpg',
-            'image_2.jpg': '../test_images/abstract_1.jpg',
-            'image_3.jpg': '../test_images/abstract_1.jpg',
+            'image_1.jpg': '../../test_images/abstract_1.jpg',
+            'image_2.jpg': '../../test_images/abstract_1.jpg',
+            'image_3.jpg': '../../test_images/abstract_1.jpg',
         }
         _copy_images_to_test_dir(images)
         result = subprocess.run('imgcmp *',
@@ -184,8 +184,8 @@ class TestCompareImages(unittest.TestCase):
 
     def test_find_duplicated_file_in_sub_dir(self):
         images = {
-            'image_1.jpg': '../test_images/abstract_1.jpg',
-            'sub_dir/image_2.jpg': '../test_images/abstract_1.jpg',
+            'image_1.jpg': '../../test_images/abstract_1.jpg',
+            'sub_dir/image_2.jpg': '../../test_images/abstract_1.jpg',
         }
         _copy_images_to_test_dir(images)
         result = subprocess.run('imgcmp -r *',
@@ -200,9 +200,9 @@ class TestCompareImages(unittest.TestCase):
 
     def test_find_duplicated_file_exclude_dir(self):
         images = {
-            'image_1.jpg': '../test_images/abstract_1.jpg',
-            'sub_dir_1/image_2.jpg': '../test_images/abstract_1.jpg',
-            'sub_dir_1/sub_dir_2/image_3.jpg': '../test_images/abstract_1.jpg',
+            'image_1.jpg': '../../test_images/abstract_1.jpg',
+            'sub_dir_1/image_2.jpg': '../../test_images/abstract_1.jpg',
+            'sub_dir_1/sub_dir_2/image_3.jpg': '../../test_images/abstract_1.jpg',
         }
         _copy_images_to_test_dir(images)
         result = subprocess.run('imgcmp -e sub_dir_1 -r *',
@@ -215,11 +215,12 @@ class TestCompareImages(unittest.TestCase):
 
     def test_find_duplicated_file_using_an_existing_database(self):
         images = {
-            'sub_dir_1/image_1.jpg': '../test_images/abstract_1.jpg',
-            'sub_dir_2/image_2.jpg': '../test_images/abstract_1.jpg',
+            'sub_dir_1/image_1.jpg': '../../test_images/abstract_1.jpg',
+            'sub_dir_2/image_2.jpg': '../../test_images/abstract_1.jpg',
         }
         _copy_images_to_test_dir(images)
-        db_images = {'sub_dir_1/image_1.jpg': '../test_images/abstract_1.jpg'}
+        db_images = {
+            'sub_dir_1/image_1.jpg': '../../test_images/abstract_1.jpg'}
         _create_sample_db(db_images, 'sample_database')
         result = subprocess.run('imgcmp -d sample_database sub_dir_2/*',
                                 shell=True,
@@ -234,10 +235,11 @@ class TestCompareImages(unittest.TestCase):
 
     def test_database_clean_up_if_file_doesnt_exist(self):
         images = {
-            'sub_dir_2/image_2.jpg': '../test_images/abstract_1.jpg',
+            'sub_dir_2/image_2.jpg': '../../test_images/abstract_1.jpg',
         }
         _copy_images_to_test_dir(images)
-        db_images = {'sub_dir_1/image_1.jpg': '../test_images/abstract_1.jpg'}
+        db_images = {
+            'sub_dir_1/image_1.jpg': '../../test_images/abstract_1.jpg'}
         _create_sample_db(db_images, 'sample_database')
         result = subprocess.run('imgcmp -d sample_database sub_dir_2/*',
                                 shell=True,
@@ -247,14 +249,14 @@ class TestCompareImages(unittest.TestCase):
         output = result.stdout.decode()
         self.assertEqual(True, "No duplicated files found" in output)
         expected_img_hash = _hashfile(_join(
-            TEST_DIR, '../test_images/abstract_1.jpg'))
+            TEST_DIR, '../../test_images/abstract_1.jpg'))
         expected_img_path = _join(TEST_DIR, 'sub_dir_2/image_2.jpg')
         _assert_db_file_contains(self,
                                  'sample_database',
                                  [f'{expected_img_hash} | '
                                   f'{expected_img_path}'])
         not_expected_img_hash = _hashfile(_join(
-            TEST_DIR, '../test_images/abstract_1.jpg'))
+            TEST_DIR, '../../test_images/abstract_1.jpg'))
         not_expected_img_path = _join(TEST_DIR, 'sub_dir_1/image_1.jpg')
         _assert_db_file_does_not_contains(self,
                                           'sample_database',

@@ -1,2 +1,5 @@
 __pycache__
 *.pyc
+cpp/buck-out
+cpp/.buckd
+cpp/.clangd

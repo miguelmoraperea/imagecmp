@@ -1,0 +1,16 @@
+cxx_binary(
+  name = 'imagecmp',
+  srcs = [
+    ('imagecmp.cpp', ['-std=c++17']),
+ ],
+)
+
+cxx_test(
+  name = 'imagecmp_test',
+  srcs = [
+    ('imagecmp_test.cpp', ['-g', '-std=c++17']),
+  ],
+  include_directories = [
+    './third-party/gtest/googletest/googletest/include/gtest',
+  ],
+)

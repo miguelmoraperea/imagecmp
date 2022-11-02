@@ -1,0 +1,48 @@
+[
+  {
+    "directory": "/home/miguel/Desktop/git/imagecmp/cpp",
+    "file": "/home/miguel/Desktop/git/imagecmp/cpp/imagecmp_test.cpp",
+    "arguments": [
+      "/usr/bin/g++",
+      "-x",
+      "c++",
+      "-std=c++17",
+      "-I",
+      "third-party/gtest/googletest/googletest/include/gtest",
+      "-I",
+      "buck-out/gen/imagecmp_test#default,private-headers",
+      "-I",
+      "buck-out/gen/third-party/gtest/gtest#header-mode-symlink-tree-only,headers",
+      "-fdebug-prefix-map=/home/miguel/Desktop/git/imagecmp/cpp=.",
+      "-gno-record-gcc-switches",
+      "-o",
+      "buck-out/gen/imagecmp_test#compile-imagecmp_test.cpp.ob7dcb95e,default/imagecmp_test.cpp.o",
+      "-c",
+      "-MD",
+      "-MF",
+      "buck-out/gen/imagecmp_test#compile-imagecmp_test.cpp.ob7dcb95e,default/imagecmp_test.cpp.o.dep",
+      "imagecmp_test.cpp"
+    ]
+  },
+  {
+    "directory": "/home/miguel/Desktop/git/imagecmp/cpp",
+    "file": "/home/miguel/Desktop/git/imagecmp/cpp/imagecmp.cpp",
+    "arguments": [
+      "/usr/bin/g++",
+      "-x",
+      "c++",
+      "-std=c++17",
+      "-I",
+      "buck-out/gen/imagecmp#default,private-headers",
+      "-fdebug-prefix-map=/home/miguel/Desktop/git/imagecmp/cpp=.",
+      "-gno-record-gcc-switches",
+      "-o",
+      "buck-out/gen/imagecmp#compile-imagecmp.cpp.od65863eb,default/imagecmp.cpp.o",
+      "-c",
+      "-MD",
+      "-MF",
+      "buck-out/gen/imagecmp#compile-imagecmp.cpp.od65863eb,default/imagecmp.cpp.o.dep",
+      "imagecmp.cpp"
+    ]
+  }
+]
