@@ -3,6 +3,9 @@
 #include <filesystem>
 #include <map>
 
+std::string kTarget = "./buck-out/gen/imagecmp";
+std::string kTestDir = "test_dir";
+
 class SampleTest : public ::testing::Test {
    protected:
     void SetUp() override {
@@ -40,8 +43,6 @@ class SampleTest : public ::testing::Test {
     }
 
    private:
-    std::string test_dir = "test_dir";
-
     void CreateTestDirectory() { Exec("mkdir " + GetTestDir().string()); }
 
     void RemoveTestDirectory() { Exec("rm -rf " + GetTestDir().string()); }
@@ -59,16 +60,9 @@ class SampleTest : public ::testing::Test {
     std::filesystem::path GetCwd() { return std::filesystem::current_path(); }
 
     std::filesystem::path GetTestDir() {
-        return GetCwd() / std::filesystem::path(test_dir);
+        return GetCwd() / std::filesystem::path(kTestDir);
     }
 };
-
-TEST_F(SampleTest, BasicAssertions) {
-    std::string result = Exec("echo Hello World");
-    std::string expected = "\nHello World\n";
-    EXPECT_EQ(expected, result);
-    EXPECT_EQ(7 * 6, 42);
-}
 
 TEST_F(SampleTest, TestNoDuplicatedImagesFound) {
     std::map<std::string, std::string> images_map = {
@@ -86,7 +80,28 @@ TEST_F(SampleTest, TestNoDuplicatedImagesFound) {
         }};
     CopyImagesToTestDir(images_map);
 
-    std::string result = Exec("imgcmp *");
+    std::string result = Exec(kTarget + " " + kTestDir + "/*");
     EXPECT_EQ(true,
               result.find("No duplicated files found") != std::string::npos);
+}
+
+TEST_F(SampleTest, TestOneDuplicatedFileFound) {
+    std::map<std::string, std::string> images_map = {
+        {
+            "image_1.jpg",
+            "../test_images/abstract_1.jpg",
+        },
+        {
+            "image_2.jpg",
+            "../test_images/abstract_2.jpg",
+        },
+        {
+            "image_3.jpg",
+            "../test_images/abstract_1.jpg",
+        }};
+    CopyImagesToTestDir(images_map);
+
+    std::string result = Exec(kTarget + " " + kTestDir + "/*");
+    std::cout << result << std::endl;
+    EXPECT_EQ(true, result.find("Duplicated files found") != std::string::npos);
 }

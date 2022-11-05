@@ -2,6 +2,7 @@ cxx_binary(
   name = 'imagecmp',
   srcs = [
     ('imagecmp.cpp', ['-std=c++17']),
+    ('./third-party/md5/md5.cpp', ['-std=c++17']),
  ],
 )
 
